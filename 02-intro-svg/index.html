@@ -27,16 +27,16 @@
       <h1>Intro a SVG</h1>
       <div id="graf" width="100%" class="mb-4"></div>
 
-      <select id="color" class="form-control mb-2">
-        <option value="red">Rojo</option>
-        <option value="green">Verde</option>
-        <option value="blue">Azul</option>
-      </select>
+      <select
+        id="colorSelect"
+        class="form-control mb-2"
+        onchange="modi({ c: true })"
+      ></select>
 
-      <button onclick="modi(-50,0)" class="btn btn-info">IZQ</button>
-      <button onclick="modi(0,-50)" class="btn btn-warning">ARR</button>
-      <button onclick="modi(0,50)" class="btn btn-warning">ABA</button>
-      <button onclick="modi(50,0)" class="btn btn-info">DER</button>
+      <button onclick="modi({ x: -50})" class="btn btn-info">IZQ</button>
+      <button onclick="modi({ y: -50 })" class="btn btn-warning">ARR</button>
+      <button onclick="modi({ y: 50 })" class="btn btn-warning">ABA</button>
+      <button onclick="modi({ x: 50})" class="btn btn-info">DER</button>
     </main>
     <footer></footer>
     <script
