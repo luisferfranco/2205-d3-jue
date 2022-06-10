@@ -37,12 +37,12 @@ const g = svg
   .append("g")
   .attr("transform", `translate(${margins.left}, ${margins.top})`)
 
-const load = async () => {
+const load = async (variable = "clientes") => {
   // Carga de Datos
   data = await d3.csv("barras.csv", d3.autoType)
 
   // Accessor
-  const yAccessor = (d) => d.margen
+  const yAccessor = (d) => d[variable]
   const xAccessor = (d) => d.tienda
 
   data.sort((a, b) => yAccessor(b) - yAccessor(a))
@@ -75,12 +75,21 @@ const load = async () => {
     .attr("height", (d) => alto - y(yAccessor(d)))
     .attr("fill", "#e9c46a")
 
+  const et = g
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("x", (d) => x(xAccessor(d)) + x.bandwidth() / 2)
+    .attr("y", (d) => y(yAccessor(d)))
+    .text(yAccessor)
+
   // Títulos
   g.append("text")
     .attr("x", ancho / 2)
     .attr("y", -15)
     .classed("titulo", true)
-    .text("Ganancias de las Tiendas")
+    .text(`${variable} de las Tiendas`)
 
   // Ejes
   const xAxis = d3.axisBottom(x)
@@ -94,4 +103,4 @@ const load = async () => {
   const yAxisGroup = g.append("g").classed("axis", true).call(yAxis)
 }
 
-load()
+load("margen")
