@@ -2,3 +2,13 @@
   background-color: #eaf4f4;
   border: 1px solid #6b9080;
 }
+
+.axis {
+  font-size: 16pt;
+}
+
+.titulo {
+  font-size: 18pt;
+  font-weight: bold;
+  text-anchor: middle;
+}
