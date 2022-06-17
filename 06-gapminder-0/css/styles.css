@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;800&display=swap");
+
+body {
+  font-family: Barlow, sans-serif;
+}
+
+.graf {
+  border: 1px solid #22333b;
+  background-color: #eae0d5;
+}
+
+.backdrop {
+  fill: #f7ede2;
+}
+
+.axis {
+  font-size: 18px;
+  shape-rendering: geometricPrecision;
+}
