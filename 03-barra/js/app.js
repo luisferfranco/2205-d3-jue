@@ -1,5 +1,6 @@
 // Selecciones
 const graf = d3.select("#graf")
+const metrica = d3.select("#metrica")
 
 // Dimensiones
 const anchoTotal = +graf.style("width").slice(0, -2)
@@ -13,8 +14,6 @@ const margins = {
 }
 const ancho = anchoTotal - margins.left - margins.right
 const alto = altoTotal - margins.top - margins.bottom
-
-// Escaladores
 
 // Elementos gráficos (layers)
 const svg = graf
@@ -37,9 +36,21 @@ const g = svg
   .append("g")
   .attr("transform", `translate(${margins.left}, ${margins.top})`)
 
-const load = async (variable = "clientes") => {
+//!!-----------------------------------------------------
+
+const draw = async (variable = "clientes") => {
   // Carga de Datos
   data = await d3.csv("barras.csv", d3.autoType)
+
+  // console.log(data)
+  // console.log(Object.keys(data[0]).slice(1))
+  metrica
+    .selectAll("option")
+    .data(Object.keys(data[0]).slice(1))
+    .enter()
+    .append("option")
+    .attr("value", (d) => d)
+    .text((d) => d)
 
   // Accessor
   const yAccessor = (d) => d[variable]
@@ -53,8 +64,8 @@ const load = async (variable = "clientes") => {
     .domain([0, d3.max(data, yAccessor)])
     .range([alto, 0])
 
-  console.log(data)
-  console.log(d3.map(data, xAccessor))
+  // console.log(data)
+  // console.log(d3.map(data, xAccessor))
 
   const x = d3
     .scaleBand()
@@ -101,6 +112,16 @@ const load = async (variable = "clientes") => {
     .classed("axis", true)
     .call(xAxis)
   const yAxisGroup = g.append("g").classed("axis", true).call(yAxis)
+
+  const render = (variable) => {}
+
+  // Eventos
+  metrica.on("change", (e) => {
+    e.preventDefault()
+    // console.log(e.target.value, metrica.node().value)
+    render(e.target.value)
+  })
+  render(variable)
 }
 
-load("margen")
+draw("margen")
