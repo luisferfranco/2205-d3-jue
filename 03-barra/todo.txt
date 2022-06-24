@@ -1,11 +1,11 @@
 16 de junio de 2022
 
 [x] Repaso del escalador lineal LinearScale
-[ ] Añadir un select al HTML para seleccionar métricas diferentes
-	[ ] Llenar el select con las métricas que hay en el archivo
-	[ ]Añadir un evento de cambio de valor
-[ ]Crear la función render para separar lo que es dinámico de lo que es estático en la gráfica
-[ ]Actualización de los datos en el cambio de métrica
-	[ ] Animación para la entrada de datos nuevos
-	[ ] Animación para el cambio de datos de acuerdo a la métrica
+[x] Añadir un select al HTML para seleccionar métricas diferentes
+	[x] Llenar el select con las métricas que hay en el archivo
+	[x]Añadir un evento de cambio de valor
+[x]Crear la función render para separar lo que es dinámico de lo que es estático en la gráfica
+[x]Actualización de los datos en el cambio de métrica
+	[x] Animación para la entrada de datos nuevos
+	[x] Animación para el cambio de datos de acuerdo a la métrica
 [ ] Uso del escalador ordinal para poner un color diferente a cada métrica del archivo de datos
