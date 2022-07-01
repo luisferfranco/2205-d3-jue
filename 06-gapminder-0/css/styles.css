@@ -6,14 +6,22 @@ body {
 
 .graf {
   border: 1px solid #22333b;
-  background-color: #eae0d5;
+  background-color: #aaa;
 }
 
 .backdrop {
-  fill: #f7ede2;
+  fill: #eaeaea;
 }
 
 .axis {
   font-size: 18px;
   shape-rendering: geometricPrecision;
+}
+
+.year {
+  font-size: 200px;
+  fill: #bedede;
+  font-weight: bold;
+  text-anchor: middle;
+  alignment-baseline: central;
 }

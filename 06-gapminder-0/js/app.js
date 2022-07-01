@@ -3,8 +3,8 @@ const draw = async (el = "#graf") => {
   const graf = d3.select("#graf")
 
   // Carga del dataset
-  const dataset = await d3.csv("gapminder.csv", d3.autoType)
-  console.log(dataset)
+  let dataset = await d3.csv("gapminder.csv", d3.autoType)
+  dataset = dataset.filter((d) => d.income > 0 && d.life_exp > 0)
 
   // Dimensiones
   const anchoTotal = +graf.style("width").slice(0, -2)
@@ -20,9 +20,26 @@ const draw = async (el = "#graf") => {
   const yAccessor = (d) => d.life_exp
   const rAccessor = (d) => d.population
 
+  // Continentes
+  const continents = Array.from(new Set(dataset.map((d) => d.continent)))
+  const selcon = d3.select("#continent")
+
+  let cont = ["todos"]
+  continents.forEach((c) => {
+    cont.push(c)
+  })
+
+  selcon
+    .selectAll("option")
+    .data(cont)
+    .join("option")
+    .attr("value", (d) => d)
+    .text((d) => d)
+
   // Escaladores
+  const color = d3.scaleOrdinal().domain(continents).range(d3.schemeTableau10)
   const x = d3
-    .scaleLinear()
+    .scaleLog()
     .domain(d3.extent(dataset, xAccessor))
     .range([0, ancho])
   const y = d3
@@ -33,7 +50,7 @@ const draw = async (el = "#graf") => {
   const r = d3
     .scaleLinear()
     .domain(d3.extent(dataset, rAccessor))
-    .range([2, 150])
+    .range([25, 25000])
     .nice()
 
   // Espacio de gráfica
@@ -51,23 +68,94 @@ const draw = async (el = "#graf") => {
     .attr("height", alto)
     .attr("class", "backdrop")
 
+  svg
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", ancho)
+    .attr("height", alto)
+
   const chart = svg
     .append("g")
     .attr("transform", `translate(${margins.left}, ${margins.top})`)
 
-  // Dibujar los puntos
-  const circles = chart
-    .selectAll("circle")
-    .data(dataset)
-    .join("circle")
-    .attr("cx", (d) => x(xAccessor(d)))
-    .attr("cy", (d) => y(yAccessor(d)))
-    .attr("r", (d) => r(rAccessor(d)))
+  // Variables
+  const yearMin = d3.min(dataset, (d) => d.year)
+  const yearMax = d3.max(dataset, (d) => d.year)
+  let year = Math.floor((yearMax - yearMin) / 2) + yearMin
+  let yearInterval
+  let running = false
+  const play = d3.select("#play")
+  let filtroContinente = "todos"
+
+  const yearLayer = chart
+    .append("g")
+    .append("text")
+    .attr("x", ancho / 2)
+    .attr("y", alto / 2)
+    .classed("year", true)
+    .text(year)
+
+  const step = (year) => {
+    let newDataset = dataset.filter((d) => d.year == year)
+
+    if (filtroContinente != "todos") {
+      newDataset = newDataset.filter((d) => d.continent == filtroContinente)
+    }
+
+    // Dibujar los puntos
+    const circles = chart
+      .selectAll("circle")
+      .data(newDataset)
+      .join("circle")
+      .attr("cx", (d) => x(xAccessor(d)))
+      .attr("cy", (d) => y(yAccessor(d)))
+      .attr("r", (d) => Math.sqrt(r(rAccessor(d) / Math.PI)))
+      .attr("fill", (d) => color(d.continent))
+      .attr("stroke", "#999")
+      .attr("opacity", 0.6)
+      .attr("clip-path", "url(#clip)")
+
+    yearLayer.text(year)
+  }
+
+  step(year)
+
+  d3.select("#ant").on("click", () => {
+    year--
+    year = year < yearMin ? yearMin : year
+    step(year)
+  })
+  d3.select("#sig").on("click", () => {
+    year++
+    year = year > yearMax ? yearMax : year
+    step(year)
+  })
+
+  play.on("click", () => {
+    if (running) {
+      clearInterval(yearInterval)
+      play.classed("btn-success", true).classed("btn-danger", false)
+    } else {
+      yearInterval = setInterval(() => {
+        year++
+        year = year > yearMax ? yearMin : year
+        step(year)
+      }, 1000)
+      play.classed("btn-success", false).classed("btn-danger", true)
+    }
+    running = !running
+  })
+
+  selcon.on("change", () => {
+    filtroContinente = selcon.node().value
+    step(year)
+  })
 
   // Ejes
   const xAxis = d3
     .axisBottom(x)
-    .ticks(5)
+    .ticks(3)
     .tickFormat((d) => d.toLocaleString())
   const yAxis = d3.axisLeft(y)
 
@@ -75,6 +163,7 @@ const draw = async (el = "#graf") => {
     .append("g")
     .attr("transform", `translate(0, ${alto})`)
     .call(xAxis)
+    .attr("transform", "rotate(-30)")
     .classed("axis", true)
   const yAxisGroup = chart.append("g").call(yAxis).classed("axis", true)
 
